@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started</title>
+    <style>
+        .code {
+            font-family: Consolas,"courier new";
+            color: darkslategray;
+            background-color:#f1f1f1;
+            padding-left: 20px;
+            padding-right: 8px;
+            font-size: 105%;
+            white-space: pre;
+        }
+
+        .comment {
+            color: gray;
+            display: inline;
+        }
+
+        .page {
+            margin: 0 auto;
+            padding: 20px;
+            width: 840px;
+            min-height: 100vh;
+            background-color: white;
+        }
+
+        a:link {
+            color:blue;
+        }
+
+        a:visited {
+            color:blue;
+        }
+
+        body {
+            background-color: darkslategray;
+            padding: 0;
+            margin: 0;
+        }
+
+        code {
+            font-family: Consolas,"courier new";
+            color: darkslategray;
+            background-color:#f1f1f1;
+            display: inline;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 64px;
+            margin-bottom: 8px;
+        }
+
+        h3 {
+            margin-top: 32px;
+            margin-bottom: 0px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <h1>MVT Framework</h1>
+        <h3 style="margin-top: 0; text-align: center">by Vincent Glendenning</h3>
+        <a id="tableOfContents">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#installation">Installation</a></li>
+                <li><a href="#.htaccess">.Htaccess</a></li>
+                <li><a href="#index.php">Index.php</a></li>
+                <ul>
+                    <li><a href="#index.php/require">Require</a></li>
+                    <li><a href="#index.php/settings">Settings</a></li>
+                    <li><a href="#index.php/initialization">Initialization</a></li>
+                    <li><a href="#index.php/routes">Routes</a></li>
+                    <li><a href="#index.php/processing">Processing</a></li>
+                    <li><a href="#index.php/summary">Summary</a></li>
+                </ul>
+                <li><a href="#models">Models</a></li>
+                <li><a href="#views">Views</a></li>
+                <ul>
+                    <li><a href="#views/view-basic">Basic View</a></li>
+                    <li><a href="#views/view-context">View with Context</a></li>
+                    <li><a href="#views/query-request-data">Query Parameters and Request Data</a></li>
+                    <li><a href="#views/http-response-codes">HTTP Response Codes</a></li>
+                    <li><a href="#views/sessions">Sessions</a></li>
+                </ul>
+                <li><a href="#templates">Templates</a></li>
+                <ul>
+                    <li><a href="#templates/variables">Variables</a></li>
+                    <li><a href="#templates/conditionals">Conditionals</a></li>
+                    <li><a href="#templates/loops">Loops</a></li>
+                    <li><a href="#templates/includes">Includes</a></li>
+                    <li><a href="#templates/urls">URLs</a></li>
+                </ul>
+            </ul>
+        </a>
+
+        <a id="installation">
+            <h2>Installation</h2>
+
+            <p>
+                In order to get started with this MVT framework, the required files must be downloaded from the
+                <a href="https://github.com/mutater/mvt-framework" target="_blank">GitHub repository</a>.
+                Place the files inside of a directory in the project root, e.g. "root/mvt/".<br><br>
+
+                <b>Note</b>: do not place any files belonging to anything other than this MVT framework inside the mvt directory.<br><br>
+
+                Once the files have been located, make sure the project satisfies the following requirements:
+
+                <ul>
+                    <li>The project uses a web server <a href="https://www.php.net/manual/en/install.unix.php" target="_blank">with PHP support</a></li>
+                    <li>The web server has PHP enabled</li>
+                    <li>PHP 8.1 or greater is installed. This framework might work on earlier versions, but has not been tested.</li>
+                </ul>
+            </p>
+        </a>
+
+        <a id=".htaccess">
+            <h2>.Htaccess</h2>
+
+            <p>
+                <b>NOTE</b>: this section of the tutorial only covers the Apache</b> web server! Use with other web servers is not covered here.<br><br>
+
+                Apache <a href="https://httpd.apache.org/docs/2.4/howto/htaccess.html" target="_blank">.htaccess</a> files are used to control access to certain directories.
+                While using this framework, they serve two purposes:
+
+                <ul>
+                    <li>Preventing public access to views and templates</li>
+                    <li>Redirecting all traffic to the index.php page</li>
+                </ul>
+
+                Redirecting all traffic to the index.php page will be done via the following. This code needs to be saved in a file named ".htaccess" and located in the
+                root directory of the project. An example directory structure is "root/.htaccess".
+            </p>
+
+            <div class="code">
+Options +FollowSymLinks
+RewriteEngine On
+
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+
+RewriteRule ^.*$ ./index.php
+            </div>
+
+            <p>
+                Next, preventing public access to important files will be done via the following. Again, this code needs to be saved in a file named ".htaccess". The
+                file needs to be placed in the directory that shouldn't be accessed by the public. An example directory structure is "root/template/.htaccess".
+            </p>
+
+            <div class="code">
+Require all denied
+            </div>
+
+            <p>
+                All directories containing private code should contain the <code>Require all denied</code> .htaccess file. Do not, however, restrict access to directories
+                containing items such as images and styles.
+            </p>
+        </a>
+
+        <a id="index.php">
+            <h2>Index.php</h2>
+
+            <p>
+                To get started, create an index.php file inside of the project root directory. An example directory structure is "root/index.php". This file will be
+                responsible for initializing the MVT framework for every request sent to the project domain.<br><br>
+            </p>
+
+            <h3 id="index.php/require">Require</h3>
+            
+            <p>
+                First comes the PHP opening tag, followed by requiring the components of the framework.
+            </p>
+
+            <div class="code">
+&lt;?php
+
+<a href="https://www.php.net/manual/en/function.require-once.php" target="_blank">require_once</a> 'framework/mvt/MVT.php';
+            </div>
+
+            <h3 id="index.php/settings">Settings</h3>
+
+            <p>
+                Next, enable any settings required from the MVT.
+            </p>
+
+            <div class="code">
+MVT::$USE_AUTHENTICATION = true; <p class="comment">// Enables authentication for pages</p>
+MVT::$USE_SESSIONS = true;       <p class="comment">// Enables sessions for users</p>
+MVT::$USE_ERROR_MESSAGE = true;  <p class="comment">// Echos any caught errors to the page</p>
+            </div>
+
+            <h3 id="index.php/initialization">Initialization</h3>
+
+            <p>
+                Now, initialize the the MVT.
+            </p>
+
+            <div class="code">
+MVT::init(<a href="https://www.php.net/manual/en/language.constants.magic.php#constant.dir" target="_blank">__dir__</a>);
+            </div>
+
+            <h3 id="index.php/routes">Routes</h3>
+
+            <p>
+                Once the initialization is complete, begin defining routes for the web pages. Each route contains a url path and a view name.
+                If <code>MVT::$USE_AUTHENTICATION</code> is set to <code>true</code>, routes can be instantiated with the
+                <code>with_auth()</code> function to enable requiring a login to visit that page. Setting the<br><code>MVT::$auth_redirect_url</code>
+                variable will make the MVT redirect requests that aren't logged in to that URL. If the variable isn't set, the MVT will instead
+                respond with a Forbidden page.
+            </p>
+
+            <div class="code">
+MVT::set_routes(
+    Route::new('/', 'home.php'),
+    Route::new('/about', 'about.php'),
+    Route::new('/some/nested/page', 'nested/page.php'),
+    Route::new('/auth', 'auth.php')->with_auth(); <p class="comment">// This page requires auth</p>
+);
+            </div>
+
+            <h3 id="index.php/processing">Processing</h3>
+
+            <p>
+                Finally, after setting up the MVT, process the request and hand it off to the specific view. Set the <code>MVT::$auth</code>
+                variable to tell the MVT whether or not the request is authenticated.
+            </p>
+
+            <div class="code">
+MVT::$auth = true; <p class="comment">// The request will be authenticated</p>
+MVT::process();
+            </div>
+
+            <h3 id="index.php/summary">Summary</h3>
+
+            <p>
+                The complete code is as follows:
+            </p>
+
+            <div class="code">
+&lt;?php
+
+<a href="https://www.php.net/manual/en/function.require-once.php" target="_blank">require_once</a> 'framework/mvt/MVT.php';
+
+MVT::$USE_AUTHENTICATION = true; <p class="comment">// Enables authentication for pages</p>
+MVT::$USE_SESSIONS = true;       <p class="comment">// Enables sessions for users</p>
+MVT::$USE_ERROR_MESSAGE = true;  <p class="comment">// Echos any caught errors to the page</p>
+
+MVT::init(<a href="https://www.php.net/manual/en/language.constants.magic.php#constant.dir" target="_blank">__dir__</a>);
+
+MVT::set_routes(
+    Route::new('/', 'home.php'),
+    Route::new('/about', 'about.php'),
+    Route::new('/some/nested/page', 'nested/page.php'),
+    Route::new('/auth', 'auth.php')->with_auth(); <p class="comment">// This page requires auth</p>
+);
+
+MVT::$auth = true; <p class="comment">// The request will be authenticated</p>
+MVT::process();
+            </div>
+        </a>
+
+        <a id="models">
+            <h2>Models</h2>
+            <p>
+                Models, while being fundamental to the MVT, are not covered here, as the implementation is up to the user. This is a
+                <a href="https://stackoverflow.com/questions/11266388/php-data-access-object" target="_blank">decent example</a>
+                of a DAO (Data Access Object) architecture based model.
+            </p>
+        </a>
+
+        <a id="views">
+            <h2>Views</h2>
+            <p>
+                Views are one of the three fundamental parts of the MVT. They are responsible for executing logic and interacting
+                with models to render a template. This is a more <a href="https://www.javatpoint.com/django-mvt" target="_blank">detailed explanation</a>,
+                describing the Django MVT implementation.<br><br>
+
+                Place the views inside of a directory in the project root, e.g. "root/views/". This is where the MVT looks for views by default; however,
+                this can be overriden with the <code>MVT::set_view_dir('directory_name/')</code> method. Views can also be nested into subdirectories,
+                e.g. "root/views/nested/page.php".<br><br>
+
+                With the MVT, views are responsible for interacting with the MVT to get request data, handling the logic of the page, and rendering templates.
+                Recall the routes defined above in the <a href="#index.php/routes">Index.php/Routes</a> section:
+            </p>
+
+            <div class="code">
+MVT::set_routes(
+    Route::new('/', 'home.php'),
+    Route::new('/about', 'about.php'),
+    Route::new('/some/nested/page', 'nested/page.php'),
+    Route::new('/auth', 'auth.php')->with_auth(); <p class="comment">// This page requires auth</p>
+);
+            </div>
+
+            <h3 id="views/view-basic">Basic View</h3>
+
+            <p>
+                For a basic home.php view, nothing needs to be done other than rendering a template.
+            </p>
+
+            <div class="code">
+&lt;?php
+
+$template = new Template('home.html');
+$template->render();
+            </div>
+
+            <h3 id="views/view-context">View with Context</h3>
+
+            <p>
+                Later on, template contexts will be introduced. Say the page needed some text that would display the current time. First, the view would use PHP
+                to get the current time as a string. Second, the view would pack that information into a <code>$context</code> variable. Third, the view
+                would pass that context to the template when rendering. The template's perspective of this problem will be viewed later.
+            </p>
+
+            <div class="code">
+&lt;?php
+
+$template = new Template('home.html');
+$current_time = <a href="https://www.php.net/manual/en/function.date.php" target="_blank">date</a>('H:i:s');
+$context = ["time" => $current_time];
+$template->render($context);
+            </div>
+
+            <h3 id="views/query-request-data">Query Parameters and Request Data</h3>
+
+            <p>
+                Views can also access <a href="https://en.wikipedia.org/wiki/Query_string" target="_blank">query parameters</a> and
+                <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST" target="_blank">request data</a> using <code>MVT::$query_params</code>
+                and <code>MVT::$request_data</code>, respectively. For example, if the request url is "https://www.example.com/home?key=value", the following code
+                would echo "value".
+            </p>
+
+            <div class="code">
+&lt;?php
+
+if (<a href="https://www.php.net/manual/en/function.isset.php" target="_blank">isset</a>(MVT::$query_params["key"])) {
+    $key = MVT::$query_params["key"];
+    echo $key;
+}
+            </div>
+
+            <p>
+                When using post requests, the MVT provides the <code>$is_post</code> and <code>$request_data</code> variables. To create a view capable of handling
+                posts requests and also rendering pages, a conditional statement must be used. The <code>MVT::redirect($page, $query_string)</code> method can be
+                used to redirect the request after a post request is handled.
+            </p>
+            <div class="code">
+&lt;?php
+
+if (MVT::$is_post) {
+    <p class="comment">// Use a model here to process the request data</p>
+    require_once MVT::abs_path('model/UserDAO.php');
+
+    $user = new User();
+    $user->load(MVT::$request_data);
+
+    UserDAO::create($user);
+
+    <p class="comment">// Redirect to another page</p>
+    MVT::redirect('/home', 'success=true');
+} else {
+    <p class="comment">// Shorthand for rendering a template in one line</p>
+    (new Template('page.html'))->render();
+}
+            </div>
+
+            <h3 id="views/http-response-codes">HTTP Response Codes</h3>
+
+            <p>
+                By default, the MVT can respond with the following <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status", target="_blank">
+                HTTP response codes</a>: 400, 403, 404, and 500. The MVT will respond with the an error page whenever it catches the
+                MalformedRequestException, ForbiddenException, NotFoundException, or any other uncaught Throwable, respectively. This means, to respond
+                with a 404 page inside of a view, the view needs to throw a new NotFoundException. When <code>MVT::$USE_ERROR_MESSAGE</code>
+                is set to <code>true</code>, the error message passed in the throwable constructor will be echoed to the page.
+            </p>
+
+            <div class="code">
+throw new MalformedRequestException("Resource not found.");
+            </div>
+
+            <h3 id="views/sessions">Sessions</h3>
+
+            <p>
+                Sessions are an important tool to keep track of client data across requests. The MVT will automatically handle acquiring a user's session using
+                basic PHP functions. Below is an example of using a session to handle authorization on a web page.
+            </p>
+
+            <div class="code">
+&lt;?php
+
+if (isset($_SESSION['role'])) {
+    if ($_SESSION['role'] == 'admin') {
+        <p class="comment">// Handle page logic here</p>
+    } else {
+        throw new ForbiddenException();
+    }
+} else {
+    MVT::redirect('/login');
+}
+            </div>
+        </a>
+
+        <a id="templates">
+            <h2>Templates</h2>
+            <p>
+                Templates are another one of the three fundamental parts of the MVT. They provide a way to dynamically render parts of a webpage from the server,
+                without having to execute any code on the client side. They allow the use of variables, conditionals, loops, and nested HTML. In essence, they
+                add a sort-of programming capability to HTML, without having to use any code.<br><br>
+
+                Place the templates inside of a directory in the project root, e.g. "root/template/". This is where the MVT looks for templates by default; however,
+                this can be overriden with the <code>MVT::set_template_dir('directory_name/')</code> method. Templates can also be nested into subdirectories,
+                e.g. "root/template/nested/page.html".<br><br>
+
+                Templates are basically HTML files. In fact, a normal HTML file is technically a valid template.<br><br>
+
+                With the MVT, templates are used in conjunction with views to generate HTML to return to the client. Recall the template with context example
+                shown above in the <a href="#views/view-context">Views/View with Context</a> section:
+            </p>
+
+            <div class="code">
+&lt;?php
+
+$template = new Template('home.html');
+$current_time = <a href="https://www.php.net/manual/en/function.date.php" target="_blank">date</a>('H:i:s');
+$context = ["time" => $current_time];
+$template->render($context);
+            </div>
+
+            <h3 id="templates/variables">Variables</h3>
+
+            <p>
+                Variables inside of a template follow the syntax <code>{{ variable_name }}</code>. The <code>$context</code> variable passed into the render
+                method is a dictionary of key-value pairs, in which every key is a variable name. The MVT follows
+                <a href="https://builtin.com/data-science/dot-notation" target="_blank">dot notation</a>, meaning the <code>$context</code> variable can contain
+                nested dictionaries. The template can access the nested dictionaries with <code>{{ nested_dictionary_name.variable_name }}</code>. This is useful
+                for loops and objects, discussed later.
+            </p>
+
+            <div class="code">
+<p class="comment">The template file:</p>
+
+&lt;body&gt;
+    &lt;h1&gt;Variables Example&lt;/h1&gt;
+    &lt;p&gt;The time is now: {{ time }}&lt;/p&gt;
+&lt;/body&gt;
+            </div><br>
+
+            <div class="code">
+<p class="comment">The HTML response:</p>
+
+&lt;body&gt;
+    &lt;h1&gt;Variables Example&lt;/h1&gt;
+    &lt;p&gt;The time is now: 3:14:07&lt;/p&gt;
+&lt;/body&gt;
+            </div>
+
+            <h3 id="templates/conditionals">Conditionals</h3>
+
+            <p>
+                Conditionals inside of a template follow the syntax
+                <code>{% if variable_name %} ... {% end %}</code>. The conditionals can span multiple lines. Conditionals and other blocks with 'end' statements
+                <b>CANNOT</b> be nested and <b>WILL</b> result in errors. In essence, if the variable is not true, then conditonals will remove the content
+                between the 'if' and 'end' statements. This is used to only render HTML if a certain condition is met. For example,
+            </p>
+
+             <div class="code">
+<p class="comment">The template file:</p>
+
+&lt;body&gt;
+    &lt;h1&gt;Conditional Example&lt;/h1&gt;
+    &lt;p&gt;The time is now: {{ time }}&lt;/p&gt;
+    {% if time_is_midnight %}
+        &lt;p&gt;It is midnight!&lt;/p&gt;
+    {% end %}
+&lt;/body&gt;
+            </div><br>
+
+            <div class="code">
+<p class="comment">The HTML response if time_is_midnight is true:</p>
+
+&lt;body&gt;
+    &lt;h1&gt;Conditional Example&lt;/h1&gt;
+    &lt;p&gt;The time is now: 3:14:07&lt;/p&gt;
+    &lt;p&gt;It is midnight!&lt;/p&gt;
+&lt;/body&gt;
+            </div><br>
+
+            <div class="code">
+<p class="comment">The HTML response if time_is_midnight is false, instead:</p>
+
+&lt;body&gt;
+    &lt;h1&gt;Conditional Example&lt;/h1&gt;
+    &lt;p&gt;The time is now: 3:14:07&lt;/p&gt;
+&lt;/body&gt;
+            </div>
+
+            <h3 id="templates/loops">Loops</h3>
+
+            <p>
+                Loops inside of a template follow a very similar syntax to conditionals.
+                <code>{% for variable_name in array_name %} ... {% end %}</code> Again, Loops and other blocks with 'end' statements <b>CANNOT</b> be nested and
+                <b>WILL</b> result in errors. Loops will repeat the content between the 'if' and 'end' statements for every item in the passed array. For example,
+            </p>
+
+            <div class="code">
+<p class="comment">The template file:</p>
+
+&lt;body&gt;
+    &lt;h1&gt;Loop Example&lt;/h1&gt;
+    &lt;p&gt;Say hello to everybody!&lt;/p&gt;
+    {% for person in people %}
+        &lt;p&gt;Hello, {{ person.name }}!&lt;/p&gt;
+    {% end %}
+&lt;/body&gt;
+            </div><br>
+
+            <div class="code">
+<p class="comment">The HTML response:</p>
+
+&lt;body&gt;
+    &lt;h1&gt;Loop Example&lt;/h1&gt;
+    &lt;p&gt;Say hello to everybody!&lt;/p&gt;
+    &lt;p&gt;Hello, John!&lt;/p&gt;
+    &lt;p&gt;Hello, Abraham!&lt;/p&gt;
+    &lt;p&gt;Hello, Vincent!&lt;/p&gt;
+    &lt;p&gt;Hello, Dennis!&lt;/p&gt;
+&lt;/body&gt;
+            </div>
+
+            <h3 id="templates/includes">Includes</h3>
+
+            <p>
+                Includes, unlike the other template functions, are one-line functions. They follow the syntax <code>{% include 'path_to_other_template' %}</code>.
+                Notice the opening and closing '{%' and '%}', which are different from the '{{' and '}}' used for variables. Includes will include another template
+                inside of the current one, passing the context. This can be used for sharing common headers, navbars, etc. across pages. Note the quotes around the
+                path. When quotes are not used, the templating engine will instead attempt to provide a path based on a variable from the context.
+            </p>
+
+            <div class="code">
+<p class="comment">Template file home.html:</p>
+
+&lt;body&gt;
+    &lt;h1&gt;Include Example&lt;/h1&gt;
+    &lt;p&gt;This is 'home.html'.&lt;/p&gt;
+    {% include 'include.html' %}
+&lt;/body&gt;
+            </div><br>
+
+            <div class="code">
+<p class="comment">Template file include.html:</p>
+
+&lt;p&gt;This is 'include.html'.&lt;/p&gt;
+&lt;p&gt;I have some important stuff in me!&lt;/p&gt;
+            </div><br>
+
+            <div class="code">
+<p class="comment">The final template (and HTML response):</p>
+
+&lt;body&gt;
+    &lt;h1&gt;Include Example&lt;/h1&gt;
+    &lt;p&gt;This is 'home.html'.&lt;/p&gt;
+    &lt;p&gt;This is 'include.html'.&lt;/p&gt;
+    &lt;p&gt;I have some important stuff in me!&lt;/p&gt;
+&lt;/body&gt;
+            </div>
+
+            <h3 id="templates/urls">URLs</h3>
+
+            <p>
+                Lastly, URLs. URLs, like includes, are one-line functions. They follow the syntax <code>{% url 'url_relative_to_root_directory' %}</code>. The
+                important thing about URLs is that they prevent the need for changing URLs when switching web server directories. For example, when the index.html
+                is located in "localhost/some/url/", the URL function would replace "/home" with "localhost/some/url/home/". Note the quotes around the URL. When
+                quotes are not used, the templating engine will instead attempt to provide a URL based on a variable from the context.
+            </p>
+
+            <div class="code">
+<p class="comment">The template file:</p>
+
+&lt;body&gt;
+    &lt;h1&gt;URL Example&lt;/h1&gt;
+    &lt;a href="{% url '/home' %}"&gt;Click me!&lt;/a&gt;
+    &lt;a href="{% url variable_url %}"&gt;Click me 2!&lt;/a&gt;
+&lt;/body&gt;
+            </div><br>
+
+            <div class="code">
+<p class="comment">The HTML response:</p>
+
+&lt;body&gt;
+    &lt;h1&gt;URL Example&lt;/h1&gt;
+    &lt;a href="localhost/home"&gt;Click me!&lt;/a&gt;
+    &lt;a href="localhost/*variable_url*"&gt;Click me 2!&lt;/a&gt;
+&lt;/body&gt;
+            </div>
+
+            <p>
+                *<i>variable_url would be replaced by the variable_url variable in the context.</i>
+            </p>
+        </a>
+    </div>
+</body>
+</html>
