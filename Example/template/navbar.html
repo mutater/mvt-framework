@@ -1,0 +1,15 @@
+<nav class="navbar navbar-expand-sm sticky-top mb-4" style="background-color:lightgrey">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url '/' %}">MVT Example</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon text-light"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+            <ul class="navbar-nav mb-2 mb-sm-0">
+                {% for item in navbar_items %}
+                <li class="nav-item"><a class="nav-link {{ item.active }}" href="{% url item.url %}">{{ item.title }}</a></li>
+                {% end %}
+            </ul>
+        </div>
+    </div>
+</nav>

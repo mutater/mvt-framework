@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    {% include 'head.html' %}
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3 login-container">
+                <h1>Welcome to the logout page!</h1>
+                <div class="card">
+                    <div class="card-body">
+                        <form action="{% url '/logout' %}" method="POST">
+                            <label class="form-label">Are you sure you wish to log out?</label>
+                            <button class="float-end btn btn-danger mt-3" type="submit" name="logout" value="false">Cancel</button>
+                            <button class="float-end btn btn-primary mt-3 me-3" type="submit" name="logout" value="true">Logout</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'body.html' %}
+</body>
+</html>

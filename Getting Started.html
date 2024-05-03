@@ -221,12 +221,12 @@ MVT::init(<a href="https://www.php.net/manual/en/language.constants.magic.php#co
             </p>
 
             <div class="code">
-MVT::set_routes(
+MVT::set_routes([
     Route::new('/', 'home.php'),
     Route::new('/about', 'about.php'),
     Route::new('/some/nested/page', 'nested/page.php'),
-    Route::new('/auth', 'auth.php')->with_auth(); <p class="comment">// This page requires auth</p>
-);
+    Route::new('/auth', 'auth.php')->with_auth() <p class="comment">// This page requires auth</p>
+]);
             </div>
 
             <h3 id="index.php/processing">Processing</h3>
@@ -258,12 +258,12 @@ MVT::$USE_ERROR_MESSAGE = true;  <p class="comment">// Echos any caught errors t
 
 MVT::init(<a href="https://www.php.net/manual/en/language.constants.magic.php#constant.dir" target="_blank">__dir__</a>);
 
-MVT::set_routes(
+MVT::set_routes([
     Route::new('/', 'home.php'),
     Route::new('/about', 'about.php'),
     Route::new('/some/nested/page', 'nested/page.php'),
-    Route::new('/auth', 'auth.php')->with_auth(); <p class="comment">// This page requires auth</p>
-);
+    Route::new('/auth', 'auth.php')->with_auth() <p class="comment">// This page requires auth</p>
+]);
 
 MVT::$auth = true; <p class="comment">// The request will be authenticated</p>
 MVT::process();
@@ -295,12 +295,12 @@ MVT::process();
             </p>
 
             <div class="code">
-MVT::set_routes(
+MVT::set_routes([
     Route::new('/', 'home.php'),
     Route::new('/about', 'about.php'),
     Route::new('/some/nested/page', 'nested/page.php'),
-    Route::new('/auth', 'auth.php')->with_auth(); <p class="comment">// This page requires auth</p>
-);
+    Route::new('/auth', 'auth.php')->with_auth() <p class="comment">// This page requires auth</p>
+]);
             </div>
 
             <h3 id="views/view-basic">Basic View</h3>
@@ -606,7 +606,7 @@ $template->render($context);
             </div>
 
             <p>
-                *<i>variable_url would be replaced by the variable_url variable in the context.</i>
+                <i>*variable_url would be replaced by the variable_url variable in the context.</i>
             </p>
         </a>
     </div>
